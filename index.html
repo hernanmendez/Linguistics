@@ -1,212 +1,314 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-            }
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=auto, minimum-scale=0.5">
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            font-size: 14pt;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        #main {
+            min-height: 100vh;
+            width: 100vw;
+            min-width: 500px;
+            overflow: hidden;
+            display: flex;
+            align-items: stretch;
+        }
+
+        #chart {
+            width: 500px;
+            height: 500px;
+            background: url('./chart.PNG');
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+
+        #panel {
+            flex: 1;
+            border-left: 2px solid black;
+            padding: 20px;
+        }
+
+        .pressable {
+            position: absolute;
+            width: 30px;
+            height: 40px;
+            background-color: rgba(145, 145, 145, 0.335);
+            border-radius: 5px;
+        }
+
+        .green {
+            background-color: rgba(21, 255, 0, 0.5);
+        }
+
+        @media (max-width: 800px) {
             #main {
-                height: 100vh;
-                display: flex;
-                align-items: stretch;
+                flex-direction: column;
+                overflow-y: scroll;
             }
-            #chart {
-                width: 500px;
-                border-right: 1px solid black;
-                background: url('./chart.png');
-                background-repeat: no-repeat;
-                background-size: contain;
-            }
+
             #panel {
-                flex: 1;
+                border-top: 2px solid black;
+                border-left: none;
             }
-            .pressable {
-                position: absolute;
-                width: 30px;
-                height: 40px;
-                background-color: rgba(145, 145, 145, 0.335);
+        }
+        @media (max-width: 500px) {
+            body {
+                overflow-x: scroll;
             }
-        </style>
-    </head>
-    <body>
-        <div id="main">
-            <div id="chart"></div>
-            <div id="panel">
-                <button onclick="training()">vowel sounds - ear training</button>
-                <hr/>
-                <button onclick="playsound()">Play sound</button>
-                <p>Attemps: 0</p>
-                <p>Correct: 0</p>
-                <p></p>
+        }
+
+        #training {
+            border-radius: 10px;
+            border: 2px solid lightgray;
+            padding: 5px;
+            text-align: center;
+            background-color: white;
+            width: 100%;
+            max-width: 400px;
+            display: block;
+            margin: 0 auto;
+            margin-bottom: 10px;
+        }
+
+        #controls {
+            border-radius: 10px;
+            border: 2px solid black;
+            padding: 15px;
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #new,
+        #again {
+            background-color: white;
+            border-radius: 10px;
+            border: 2px solid lightgray;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 16pt;
+            margin-bottom: 10px;
+        }
+
+        P:nth-child(3) {
+            margin-top: 10px;
+        }
+
+        p:nth-child(4) {
+            color: limegreen;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <div id="chart"></div>
+        <div id="panel">
+            <button onclick="training()" id="training">vowel sounds - ear training</button>
+            <div id="controls">
+                <button onclick="playsound()" id="new">Play new sound</button>
+                <button onclick="playagain()" id="again">Play sound again</button>
+                <p id="attempts">Attemps: 0</p>
+                <p id="correct">Correct: 0</p>
+                <p id="percentage">?% Correct</p>
             </div>
         </div>
-        <script>
-            function r(a) {
-                return Math.floor(Math.random() * a + 1)
+    </div>
+    <script>
+        function r(a) {
+            return Math.floor(Math.random() * a + 1)
+        }
+        function url(b, n) {
+            var a = b + ' - '
+            switch (b) {
+                case 1:
+                    a = a + 'i'
+                    break;
+                case 2:
+                    a = a + 'y'
+                    break;
+                case 3:
+                    a = a + 'ɨ'
+                    break;
+                case 4:
+                    a = a + 'ʉ'
+                    break;
+                case 5:
+                    a = a + 'ɯ'
+                    break;
+                case 6:
+                    a = a + 'u'
+                    break;
+                case 7:
+                    a = a + 'ɪ'
+                    break;
+                case 8:
+                    a = a + 'ʏ'
+                    break;
+                case 9:
+                    a = a + 'ʊ'
+                    break;
+                case 10:
+                    a = a + 'e'
+                    break;
+                case 11:
+                    a = a + 'ø'
+                    break;
+                case 12:
+                    a = a + 'ɘ'
+                    break;
+                case 13:
+                    a = a + 'ɵ'
+                    break;
+                case 14:
+                    a = a + 'ɤ'
+                    break;
+                case 15:
+                    a = a + 'o'
+                    break;
+                case 16:
+                    a = a + 'ə'
+                    break;
+                case 17:
+                    a = a + 'ɛ'
+                    break;
+                case 18:
+                    a = a + 'œ'
+                    break;
+                case 19:
+                    a = a + 'ɜ'
+                    break;
+                case 20:
+                    a = a + 'ɞ'
+                    break;
+                case 21:
+                    a = a + 'ʌ'
+                    break;
+                case 22:
+                    a = a + 'ɔ'
+                    break;
+                case 23:
+                    a = a + 'æ'
+                    break;
+                case 24:
+                    a = a + 'ɐ'
+                    break;
+                case 25:
+                    a = a + 'a'
+                    break;
+                case 26:
+                    a = a + 'ɶ'
+                    break;
+                case 27:
+                    a = a + 'ɑ'
+                    break;
+                case 28:
+                    a = a + 'ɒ'
+                    break;
             }
-            function url(b, n) {
-                var a = b + ' - '
-                switch(b) {
-                    case 1:
-                        a = a + 'i'
-                        break;
-                    case 2:
-                        a = a + 'y'
-                        break;
-                    case 3:
-                        a = a + 'ɨ'
-                        break;
-                    case 4:
-                        a = a + 'ʉ'
-                        break;
-                    case 5:
-                        a = a + 'ɯ'
-                        break;
-                    case 6:
-                        a = a + 'u'
-                        break;
-                    case 7:
-                        a = a + 'ɪ'
-                        break;
-                    case 8:
-                        a = a + 'ʏ'
-                        break;
-                    case 9:
-                        a = a + 'ʊ'
-                        break;
-                    case 10:
-                        a = a + 'e'
-                        break;
-                    case 11:
-                        a = a + 'ø'
-                        break;
-                    case 12:
-                        a = a + 'ɘ'
-                        break;
-                    case 13:
-                        a = a + 'ɵ'
-                        break;
-                    case 14:
-                        a = a + 'ɤ'
-                        break;
-                    case 15:
-                        a = a + 'o'
-                        break;
-                    case 16:
-                        a = a + 'ə'
-                        break;
-                    case 17:
-                        a = a + 'ɛ'
-                        break;
-                    case 18:
-                        a = a + 'œ'
-                        break;
-                    case 19:
-                        a = a + 'ɜ'
-                        break;
-                    case 20:
-                        a = a + 'ɞ'
-                        break;
-                    case 21:
-                        a = a + 'ʌ'
-                        break;
-                    case 22:
-                        a = a + 'ɔ'
-                        break;
-                    case 23:
-                        a = a + 'æ'
-                        break;
-                    case 24:
-                        a = a + 'ɐ'
-                        break;
-                    case 25:
-                        a = a + 'a'
-                        break;
-                    case 26:
-                        a = a + 'ɶ'
-                        break;
-                    case 27:
-                        a = a + 'ɑ'
-                        break;
-                    case 28:
-                        a = a + 'ɒ'
-                        break;
-                }
-                return `./Audio/${a}/${n}.mp3`
+            return `./Audio/${a}/${n}.mp3`
+        }
+        var sound = new Audio();
+        function training() {
+            challenge = false
+            sound.src = url(r(28), r(4))
+            sound.play()
+            sound.addEventListener('ended', training)
+        }
+        var attempts = 0;
+        var correct = 0;
+        var challenge = false;
+        var chalSoundN = 0;
+        var chart = document.getElementById('chart');
+        var ps = document.getElementsByTagName('p');
+        var rotation = 0
+        function playagain() {
+            sound.play()
+        }
+        function playsound() {
+            challenge = true;
+            chalSoundN = r(28);
+            sound.src = url(chalSoundN, r(4))
+            console.log(chalSoundN)
+            sound.play()
+            sound.removeEventListener('ended', training)
+        }
+        function createPressable(x, y, soundN, width) {
+            var pressable = document.createElement('DIV');
+            pressable.className = 'pressable';
+            pressable.style.top = y + 'px';
+            pressable.style.left = x + 'px';
+            pressable.id = soundN;
+            if (width) {
+                pressable.style.width = width + 'px';
             }
-            var sound= new Audio();
-            function training() {
-                challenge = false
-                sound.src = url(r(28), r(4))
-                sound.play()
-            }
-            sound.addEventListener('ended', () => {
-                if(!challenge) training()
-            })
-            var attempts = 0;
-            var correct = 0;
-            var challenge = false;
-            var chalSoundN = 0;
-            var chart = document.getElementById('chart');
-            var ps = document.getElementsByTagName('p');
-            function playsound() {
-                challenge = true;
-                chalSoundN = r(28);
-                sound.src = url(chalSoundN, r(4))
-                console.log(chalSoundN)
-                sound.play()
-            }
-            function createPressable(x,y,soundN, width) {
-                var pressable = document.createElement('DIV');
-                pressable.className = 'pressable';
-                pressable.style.top = y + 'px';
-                pressable.style.left = x + 'px';
-                if(width) {
-                    pressable.style.width = width + 'px';
-                }
-                pressable.onclick = () => {
-                    if(challenge) {
-                        challenge = false
-                        attempts++
-                        if(soundN == chalSoundN) {
-                            correct++
-                        }
-                        ps[0].innerHTML = 'Attemps: ' + attempts
-                        ps[1].innerHTML = 'Correct: ' + correct
-                        ps[2].innerHTML = Math.round((correct/attempts) * 100) + '% correct'
+            pressable.onclick = () => {
+                if (challenge) {
+                    challenge = false
+                    attempts++
+                    if (soundN == chalSoundN) {
+                        correct++
                     }
+                    ps[0].innerHTML = 'Attemps: ' + attempts
+                    ps[1].innerHTML = 'Correct: ' + correct
+                    var percent = Math.round((correct / attempts) * 100);
+                    ps[2].innerHTML = percent + '% correct'
+                    ps[2].style.color = `rgb(${(1 - (percent / 100)) * 255},${(percent / 100) * 255},0)`
+                    var current = chalSoundN
+                    document.getElementById(current).className = 'pressable green'
+                    setTimeout(() => {
+                        document.getElementById(current).className = 'pressable'
+                    }, 1000)
+                } else {
+                    sound.src = url(soundN, (++rotation % 4) + 1)
+                    sound.play()
                 }
-                chart.appendChild(pressable);
             }
-            createPressable(88,58,1,20);
-            createPressable(120,64,2);
-            createPressable(260,58,3,20);
-            createPressable(290,58,4);
-            createPressable(405,58,5,43);
-            createPressable(460,58,6);
-            createPressable(168,115,7,20);
-            createPressable(194,115,8,26);
-            createPressable(380,115,9);
-            createPressable(133,170,10);
-            createPressable(178,170,11);
-            createPressable(275,170,12);
-            createPressable(318,170,13);
-            createPressable(416,170,14);
-            createPressable(460,170,15);
-            createPressable(310,226,16);
-            createPressable(190,284,17);
-            createPressable(230,284,18,50);
-            createPressable(305,284,19);
-            createPressable(348,284,20);
-            createPressable(416,284,21);
-            createPressable(458,284,22);
-            createPressable(200,340,23,50);
-            createPressable(340,340,24);
-            createPressable(245,396,25);
-            createPressable(285,396,26,50);
-            createPressable(416,396,27);
-            createPressable(460,396,28);   
-        </script>
-    </body>
+            chart.appendChild(pressable);
+        }
+        createPressable(88, 58, 1, 20);
+        createPressable(120, 64, 2);
+        createPressable(258, 58, 3, 20);
+        createPressable(290, 58, 4);
+        createPressable(405, 58, 5, 43);
+        createPressable(460, 58, 6);
+        createPressable(168, 115, 7, 20);
+        createPressable(194, 115, 8, 26);
+        createPressable(380, 115, 9);
+        createPressable(133, 170, 10);
+        createPressable(178, 170, 11);
+        createPressable(275, 170, 12);
+        createPressable(318, 170, 13);
+        createPressable(416, 170, 14);
+        createPressable(460, 170, 15);
+        createPressable(310, 226, 16);
+        createPressable(190, 284, 17);
+        createPressable(230, 284, 18, 50);
+        createPressable(305, 284, 19);
+        createPressable(348, 284, 20);
+        createPressable(416, 284, 21);
+        createPressable(458, 284, 22);
+        createPressable(200, 340, 23, 50);
+        createPressable(340, 340, 24);
+        createPressable(245, 396, 25);
+        createPressable(285, 396, 26, 50);
+        createPressable(416, 396, 27);
+        createPressable(460, 396, 28);   
+    </script>
+</body>
+
 </html>
