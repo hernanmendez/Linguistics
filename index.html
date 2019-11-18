@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=auto, minimum-scale=0.5">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5">
     <style>
         body {
             overflow-x: hidden;
@@ -50,6 +50,10 @@
             background-color: rgba(21, 255, 0, 0.5);
         }
 
+        .selected {
+            background-color: rgba(65, 136, 136, 0.5);
+        }
+
         @media (max-width: 800px) {
             #main {
                 flex-direction: column;
@@ -91,7 +95,8 @@
         }
 
         #new,
-        #again {
+        #again,
+        #select {
             background-color: white;
             border-radius: 10px;
             border: 2px solid lightgray;
@@ -111,6 +116,19 @@
         p:nth-child(4) {
             color: limegreen;
         }
+
+        #select_controls {
+            border-radius: 10px;
+            border: 2px solid lightgray;
+            padding: 5px;
+            text-align: center;
+            background-color: white;
+            width: 100%;
+            max-width: 400px;
+            display: block;
+            margin: 0 auto;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 
@@ -119,6 +137,9 @@
         <div id="chart"></div>
         <div id="panel">
             <button onclick="training()" id="training">vowel sounds - ear training</button>
+            <div id="select_controls">
+                <p id="target">Target Sounds: All</p><button onclick="select()" id="select">Select Sounds</button>
+            </div>
             <div id="controls">
                 <button onclick="playsound()" id="new">Play new sound</button>
                 <button onclick="playagain()" id="again">Play sound again</button>
@@ -129,103 +150,117 @@
         </div>
     </div>
     <script>
+        var selecting = false;
+        var selected = [];
         function r(a) {
             return Math.floor(Math.random() * a + 1)
         }
-        function url(b, n) {
-            var a = b + ' - '
-            switch (b) {
+        function getRandomSoundNumber() {
+            if(selected.length) {
+                return selected[Math.floor(Math.random() * selected.length)]
+            } else {
+                return r(28)
+            }
+        }
+        console.log(!!selected.length)
+        function getSymbol(n) {
+            var a;
+            switch (n) {
                 case 1:
-                    a = a + 'i'
+                    a = 'i'
                     break;
                 case 2:
-                    a = a + 'y'
+                    a = 'y'
                     break;
                 case 3:
-                    a = a + 'ɨ'
+                    a = 'ɨ'
                     break;
                 case 4:
-                    a = a + 'ʉ'
+                    a = 'ʉ'
                     break;
                 case 5:
-                    a = a + 'ɯ'
+                    a = 'ɯ'
                     break;
                 case 6:
-                    a = a + 'u'
+                    a = 'u'
                     break;
                 case 7:
-                    a = a + 'ɪ'
+                    a = 'ɪ'
                     break;
                 case 8:
-                    a = a + 'ʏ'
+                    a = 'ʏ'
                     break;
                 case 9:
-                    a = a + 'ʊ'
+                    a = 'ʊ'
                     break;
                 case 10:
-                    a = a + 'e'
+                    a = 'e'
                     break;
                 case 11:
-                    a = a + 'ø'
+                    a = 'ø'
                     break;
                 case 12:
-                    a = a + 'ɘ'
+                    a = 'ɘ'
                     break;
                 case 13:
-                    a = a + 'ɵ'
+                    a = 'ɵ'
                     break;
                 case 14:
-                    a = a + 'ɤ'
+                    a = 'ɤ'
                     break;
                 case 15:
-                    a = a + 'o'
+                    a = 'o'
                     break;
                 case 16:
-                    a = a + 'ə'
+                    a = 'ə'
                     break;
                 case 17:
-                    a = a + 'ɛ'
+                    a = 'ɛ'
                     break;
                 case 18:
-                    a = a + 'œ'
+                    a = 'œ'
                     break;
                 case 19:
-                    a = a + 'ɜ'
+                    a = 'ɜ'
                     break;
                 case 20:
-                    a = a + 'ɞ'
+                    a = 'ɞ'
                     break;
                 case 21:
-                    a = a + 'ʌ'
+                    a = 'ʌ'
                     break;
                 case 22:
-                    a = a + 'ɔ'
+                    a = 'ɔ'
                     break;
                 case 23:
-                    a = a + 'æ'
+                    a = 'æ'
                     break;
                 case 24:
-                    a = a + 'ɐ'
+                    a = 'ɐ'
                     break;
                 case 25:
-                    a = a + 'a'
+                    a = 'a'
                     break;
                 case 26:
-                    a = a + 'ɶ'
+                    a = 'ɶ'
                     break;
                 case 27:
-                    a = a + 'ɑ'
+                    a = 'ɑ'
                     break;
                 case 28:
-                    a = a + 'ɒ'
+                    a = 'ɒ'
                     break;
             }
+            return a;
+        }
+        function url(b, n) {
+            var a = b + ' - ' + getSymbol(b);
             return `./Audio/${a}/${n}.mp3`
         }
         var sound = new Audio();
         function training() {
             challenge = false
-            sound.src = url(r(28), r(4))
+            sound.src = url(getRandomSoundNumber(), r(4))
             sound.play()
             sound.addEventListener('ended', training)
         }
@@ -235,17 +270,39 @@
         var chalSoundN = 0;
         var chart = document.getElementById('chart');
         var ps = document.getElementsByTagName('p');
-        var rotation = 0
+        var rotation = 0;
         function playagain() {
             sound.play()
         }
         function playsound() {
             challenge = true;
-            chalSoundN = r(28);
+            if(selecting) select();
+            chalSoundN = getRandomSoundNumber();
             sound.src = url(chalSoundN, r(4))
             console.log(chalSoundN)
             sound.play()
             sound.removeEventListener('ended', training)
+        }
+        function select() {
+            selecting = !selecting;
+            challenge = false;
+            if(selecting) {
+                document.getElementById('select').innerHTML = "Stop Selecting"
+            } else {
+                document.getElementById('select').innerHTML = "Select Sounds"
+            }
+        }
+        function updateSelections() {
+            var targets = "Target Sounds: "
+            if(selected.length) {
+                selected.forEach((val, index) => {
+                    targets = targets + getSymbol(val)
+                    if (index+1 != selected.length) targets = targets + ', ';
+                })
+            } else {
+                targets = targets + "All"
+            }
+            document.getElementById('target').innerHTML = targets
         }
         function createPressable(x, y, soundN, width) {
             var pressable = document.createElement('DIV');
@@ -273,7 +330,17 @@
                     setTimeout(() => {
                         document.getElementById(current).className = 'pressable'
                     }, 1000)
+                } else if(selecting) {
+                    if(selected.indexOf(soundN) > -1) {
+                        document.getElementById(soundN).className = 'pressable'
+                        selected.splice(selected.indexOf(soundN), 1)
+                    } else {
+                        document.getElementById(soundN).className = 'pressable selected'
+                        selected.push(soundN)
+                    }
+                    updateSelections();
                 } else {
+                    sound.removeEventListener('ended', training)
                     sound.src = url(soundN, (++rotation % 4) + 1)
                     sound.play()
                 }
