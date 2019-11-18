@@ -326,9 +326,10 @@
                     ps[2].innerHTML = percent + '% correct'
                     ps[2].style.color = `rgb(${(1 - (percent / 100)) * 255},${(percent / 100) * 255},0)`
                     var current = chalSoundN
+                    var originalClassName = document.getElementById(current).className
                     document.getElementById(current).className = 'pressable green'
                     setTimeout(() => {
-                        document.getElementById(current).className = 'pressable'
+                        document.getElementById(current).className = originalClassName
                     }, 1000)
                 } else if(selecting) {
                     if(selected.indexOf(soundN) > -1) {
